@@ -22,7 +22,7 @@ app.post('/fortuneTell', async function (req, res) {
             { role: 'user', content: '오늘의 운세가 뭐야?' }
         ],
         model: 'gpt-3.5-turbo',
-        max_tokens: 100,
+        // max_tokens: 100,
         temperature: 0.5,
     });
 
