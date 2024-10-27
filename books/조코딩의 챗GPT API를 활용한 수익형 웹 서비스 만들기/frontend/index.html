@@ -8,7 +8,29 @@
 </head>
 
 <body>
+    <button onclick="sendFortuneRequest()">요청하기</button>
+    <script>
+        async function sendFortuneRequest() {
+            try {
+                const response = await fetch("http://localhost:3000/fortuneTell", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name: 'John' })
+                });
 
+                if (!response.ok) {
+                    throw new Error('Request failed with status: ' + response.status);
+                }
+
+                const data = await response.json();
+                console.log("response: ", data);
+            } catch (error) {
+                console.error('error: ', error);
+            }
+        }
+    </script>
 </body>
 
 </html>
