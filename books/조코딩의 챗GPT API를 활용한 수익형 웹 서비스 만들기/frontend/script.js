@@ -1,3 +1,6 @@
+let userMessages = [];
+let assistantMessages = [];
+
 async function sendMessage() {
     const messageInput = document.getElementById("messageInput");
     const message = messageInput.value;
@@ -7,6 +10,8 @@ async function sendMessage() {
     userBubble.textContent = message;
     document.getElementById('fortuneResponse').appendChild(userBubble);
 
+    userMessages.push(messageInput.value);
+
     messageInput.value = "";
 
     try {
@@ -15,7 +20,10 @@ async function sendMessage() {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ name: 'John' })
+            body: JSON.stringify({
+                userMessages: userMessages,
+                assistantMessages: assistantMessages
+            })
         });
 
         if (!response.ok) {
@@ -29,6 +37,8 @@ async function sendMessage() {
         botBubble.className = "chat-bubble bot-bubble";
         botBubble.textContent = data.assistant;
         document.getElementById("fortuneResponse").appendChild(botBubble);
+
+        assistantMessages.push(data.assistant);
     } catch (error) {
         console.error('error: ', error);
     }
