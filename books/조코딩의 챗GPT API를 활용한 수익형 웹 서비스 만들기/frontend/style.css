@@ -44,3 +44,21 @@ body {
     border-radius: 5px;
     cursor: pointer;
 }
+
+.intro-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.intro-container img {
+    width: 50%;
+    min-width: 300px;
+    max-width: 700px;
+}
+
+#loader {
+    font-size: 25px;
+    text-align: center;
+}
