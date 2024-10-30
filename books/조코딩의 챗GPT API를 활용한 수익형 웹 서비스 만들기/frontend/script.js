@@ -33,7 +33,7 @@ async function sendMessage() {
     messageInput.value = "";
 
     try {
-        const response = await fetch("http://localhost:3000/fortuneTell", {
+        const response = await fetch("https://2he4qd6bno7xeblf5cp7wvewrq0cfqpa.lambda-url.us-east-1.on.aws/fortuneTell", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
