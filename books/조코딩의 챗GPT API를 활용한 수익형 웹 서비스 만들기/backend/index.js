@@ -5,11 +5,17 @@ const client = new OpenAI({
     apiKey: process.env.API_KEY_OPENAI
 });
 
+const serverless = require('serverless-http')
+
 const express = require('express');
-const cors = require('cors');
 const app = express();
 
-app.use(cors())
+const cors = require('cors');
+const corsOptions = {
+    origin: 'https://chatdoge-yoonhok.pages.dev',
+    credentials: true
+}
+app.use(cors(corsOptions))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
@@ -48,4 +54,4 @@ app.post('/fortuneTell', async function (req, res) {
     res.json({ "assistant": fortune });
 })
 
-app.listen(3000);
+module.exports.handler = serverless(app)
