@@ -44,9 +44,9 @@ fun MainPane() {
             }
 
             if (onOff) {
-                FadeInEffectText("라이브 스케줄로 방송 일정을 알리세요")
+                FadeInEffectText("안녕하세요, 만나서 반갑습니다 :)")
 
-                TypingEffectText("라이브 스케줄로 방송 일정을 알리세요")
+                TypingEffectText("안녕하세요, 만나서 반갑습니다 :)")
             }
 
             if (!onOff) {
