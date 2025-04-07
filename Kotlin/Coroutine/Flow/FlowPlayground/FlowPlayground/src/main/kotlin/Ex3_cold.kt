@@ -18,4 +18,5 @@ fun main() = runBlocking {
         log("\tCollecting $it")
         delay(500L)
     }
+
 }
