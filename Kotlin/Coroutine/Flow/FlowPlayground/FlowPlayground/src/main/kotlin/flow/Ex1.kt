@@ -1,9 +1,9 @@
-package org.example
+package org.example.flow
 
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.runBlocking
+import org.example.log
 
 fun main() = runBlocking {
     flowOf("Monday", "Tuesday", "Wednesday")

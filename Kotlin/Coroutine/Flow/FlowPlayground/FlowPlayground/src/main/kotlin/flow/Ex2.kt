@@ -1,7 +1,10 @@
-package org.example
+package org.example.flow
 
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.runBlocking
+import org.example.log
 
 fun main() = runBlocking {
     val flow = flow {

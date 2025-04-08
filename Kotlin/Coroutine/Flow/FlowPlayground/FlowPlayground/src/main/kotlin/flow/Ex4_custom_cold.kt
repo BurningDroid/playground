@@ -1,7 +1,8 @@
-package org.example
+package org.example.flow
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import org.example.log
 
 class ColdFlow: Flow<String> {
     override suspend fun collect(collector: FlowCollector<String>) {

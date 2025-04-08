@@ -1,7 +1,8 @@
-package org.example
+package org.example.flow
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import org.example.log
 
 fun main() = runBlocking {
     flow {
