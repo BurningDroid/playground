@@ -1,27 +1,31 @@
 package org.example.flow
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
+import org.example.log
 
+@OptIn(ExperimentalCoroutinesApi::class)
 fun main() = runBlocking<Unit> {
-    val channel = produce(capacity = Channel.UNLIMITED) {
+    produce(capacity = Channel.UNLIMITED) {
         repeat(3) {
             val data = "channel_item_$it"
-            println("send: $data")
+            log("[Channel] send: $data")
             send(data)
         }
     }
 
-    val flow = flow {
+    flow {
         repeat(3) {
             val data = "flow_item_$it"
-            println("emit: $data")
+            log("[Flow] emit: $data")
             emit(data)
         }
-    }
+    }.collect {}
 
     delay(1_000)
+    log("<<< done >>>")
 }
