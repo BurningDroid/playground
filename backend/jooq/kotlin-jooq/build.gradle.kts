@@ -1,3 +1,14 @@
+buildscript {
+	repositories {
+		mavenCentral()
+		gradlePluginPortal()
+	}
+	dependencies {
+		classpath("org.flywaydb:flyway-mysql:10.8.1")
+		classpath("com.mysql:mysql-connector-j:8.0.33")
+	}
+}
+
 plugins {
 	kotlin("jvm") version "1.9.25"
 	kotlin("plugin.spring") version "1.9.25"
