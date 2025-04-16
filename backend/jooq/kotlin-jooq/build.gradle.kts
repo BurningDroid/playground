@@ -55,6 +55,7 @@ dependencies {
 	// jooq
 	jooqGenerator("com.mysql:mysql-connector-j")
 	jooqGenerator("org.jooq:jooq-meta-extensions:$jooqVersion")
+	jooqGenerator(project(":custom-strategy"))
 
 	// Test
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -85,6 +86,9 @@ jooq {
 				}
 				generator.apply { // 코드 생성 설정
 					name = "org.jooq.codegen.KotlinGenerator"
+					strategy.apply {
+						name = "com.example.com.example.kotlinjooq.PrefixGeneratorStrategy"
+					}
 					database.apply {
 						name = "org.jooq.meta.mysql.MySQLDatabase"
 						inputSchema = "jooq"
