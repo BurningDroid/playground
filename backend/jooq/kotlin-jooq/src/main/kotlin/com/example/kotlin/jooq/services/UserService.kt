@@ -1,5 +1,6 @@
 package com.example.kotlin.jooq.services
 
+import com.example.generated.tables.pojos.Users
 import com.example.kotlin.jooq.dto.user.UserCreateServiceDto
 import com.example.kotlin.jooq.repo.user.UserRepository
 import org.springframework.stereotype.Service
@@ -20,5 +21,9 @@ class UserService(
     fun create2(dto: UserCreateServiceDto): Long {
         val user = dto.toEntity()
         return userRepo.create2(user)
+    }
+
+    fun findById(id: Long): Users {
+        return userRepo.findById(id)
     }
 }

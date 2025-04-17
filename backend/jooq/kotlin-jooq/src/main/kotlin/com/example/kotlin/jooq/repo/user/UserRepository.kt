@@ -3,6 +3,7 @@ package com.example.kotlin.jooq.repo.user
 import com.example.generated.tables.Users_
 import com.example.generated.tables.daos.UsersDao
 import com.example.generated.tables.pojos.Users
+import com.example.kotlin.jooq.exceptions.NotFoundException
 import org.jooq.DSLContext
 import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
@@ -33,5 +34,11 @@ class UserRepository(
         user.updatedAt = LocalDateTime.now()
         usersDao.insert(user)
         return user.id ?: throw IllegalArgumentException()
+    }
+
+    fun findById(id: Long): Users {
+        return dslContext.selectFrom(USERS)
+            .where(USERS.ID.eq(id))
+            .fetchOneInto(Users::class.java) ?: throw NotFoundException("해당 ID: ${id}를 가진 사용자를 찾을 수 없습니다.")
     }
 }

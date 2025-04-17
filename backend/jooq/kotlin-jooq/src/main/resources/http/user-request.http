@@ -18,4 +18,9 @@ Content-Type: application/json
     "password": "test password2"
 }
 
+### GET 유저 조회
+GET localhost:8080/1
+
+
 curl -X POST -H "Content-Type: application/json; charset=utf-8" -d '{"email": "test2@test.com","username": "test username2","password": "test password2"}' http://127.0.0.1:8080/users/v1
+curl http://127.0.0.1:8080/100
