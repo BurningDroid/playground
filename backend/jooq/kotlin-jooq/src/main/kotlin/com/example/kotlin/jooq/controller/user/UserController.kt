@@ -4,6 +4,8 @@ import com.example.generated.tables.pojos.Users
 import com.example.kotlin.jooq.api.ApiResponse
 import com.example.kotlin.jooq.dto.user.UserCreateServiceDto
 import com.example.kotlin.jooq.dto.user.UserRequest
+import com.example.kotlin.jooq.dto.user.UserResponse
+import com.example.kotlin.jooq.dto.user.toUserResponse
 import com.example.kotlin.jooq.services.UserService
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
@@ -36,7 +38,7 @@ class UserController(
     }
 
     @GetMapping("/{id}")
-    fun findById(@PathVariable("id") id: Long): ResponseEntity<ApiResponse<Users>> {
+    fun findById(@PathVariable("id") id: Long): ResponseEntity<ApiResponse<UserResponse>> {
         return ResponseEntity.ok(ApiResponse.success(userService.findById(id)))
     }
 }
