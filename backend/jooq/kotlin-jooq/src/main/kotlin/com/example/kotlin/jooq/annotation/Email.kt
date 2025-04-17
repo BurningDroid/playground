@@ -18,7 +18,7 @@ annotation class Email(
 class EmailValidator : ConstraintValidator<Email, String> {
     override fun isValid(value: String?, context: ConstraintValidatorContext?): Boolean {
         if (value == null) return false
-        val pattern = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+//.[A-Za-z]{2,6}$"
+        val pattern = "^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+\$"
         return value.matches(pattern.toRegex())
     }
 
