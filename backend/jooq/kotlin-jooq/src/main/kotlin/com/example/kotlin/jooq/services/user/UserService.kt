@@ -1,6 +1,5 @@
-package com.example.kotlin.jooq.services
+package com.example.kotlin.jooq.services.user
 
-import com.example.generated.tables.pojos.Users
 import com.example.kotlin.jooq.dto.user.UserCreateServiceDto
 import com.example.kotlin.jooq.dto.user.UserResponse
 import com.example.kotlin.jooq.dto.user.toUserResponse
