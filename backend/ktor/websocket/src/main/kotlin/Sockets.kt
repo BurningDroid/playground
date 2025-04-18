@@ -13,7 +13,8 @@ private val programList = listOf(
     "Google Chrome",
     "Android Studio",
     "Slack",
-    "Github Desktop"
+    "Github Desktop",
+    "Visual Studio Code",
 )
 
 fun Application.configureSockets() {
@@ -65,15 +66,25 @@ private suspend fun onReceiveMessage(outgoing: SendChannel<Frame>, text: String)
         outgoing.send(Frame.Text("$text is launched"))
         return
     } else if (text.startsWith("⌘")) {
-        val key = text.split("⌘")[1].lowercase()
-        withContext(Dispatchers.IO) {
-            Runtime.getRuntime().exec(arrayOf("osascript", "-e", "tell application \"System Events\" to keystroke \"$key\" using command down"))
-        }
+        runShortcut(text)
         outgoing.send(Frame.Text("$text is operated"))
         return
     }
 
     outgoing.send(Frame.Text("Not Found: $text"))
+}
+
+private suspend fun runShortcut(text: String) {
+    val key = text.split("⌘")[1].lowercase()
+    withContext(Dispatchers.IO) {
+        Runtime.getRuntime().exec(
+            arrayOf(
+                "osascript",
+                "-e",
+                "tell application \"System Events\" to keystroke \"$key\" using command down"
+            )
+        )
+    }
 }
 
 private fun launchProgram(program: String) {
