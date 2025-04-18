@@ -30,7 +30,9 @@ class MainViewModel: ViewModel() {
         "⌘C",
         "⌘V",
         "⌘X",
-        "⌘T"
+        "⌘T",
+        "⌘W",
+        "⌘Q"
     )
 
     private val client = HttpClient(CIO) {
