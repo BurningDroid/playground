@@ -31,4 +31,9 @@ class PostRepository(
         ).returningResult(POST.ID)
             .fetchOneInto(Long::class.java) ?: throw NotFoundException("could not create post")
     }
+
+    fun findById(id: Long): Post {
+        return dslContext.selectFrom(POST)
+            .fetchOneInto(Post::class.java) ?: throw NotFoundException("could not find post")
+    }
 }
