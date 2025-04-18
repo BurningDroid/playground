@@ -11,3 +11,7 @@ Content-Type: application/json
 
 ### GET 게시물 조회
 GET localhost:8080/posts/1
+
+
+### GET 게시물 리스트 조회
+GET localhost:8080/posts/list

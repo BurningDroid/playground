@@ -1,11 +1,16 @@
 package com.example.kotlin.jooq.repo.post
 
 import com.example.generated.tables.Post_
-import com.example.generated.tables.daos.PostDao
+import com.example.generated.tables.Users_
 import com.example.generated.tables.pojos.Post
 import com.example.generated.tables.pojos.Users
+import com.example.kotlin.jooq.dto.page.PageRequest
+import com.example.kotlin.jooq.dto.page.PageResponse
+import com.example.kotlin.jooq.dto.post.PostWithUser
+import com.example.kotlin.jooq.dto.post.PostWithUserResponse
 import com.example.kotlin.jooq.exceptions.NotFoundException
 import org.jooq.DSLContext
+import org.jooq.impl.DSL
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -14,7 +19,8 @@ class PostRepository(
 ) {
 
     companion object {
-        private val POST: Post_ = Post_.POST
+        val POST: Post_ = Post_.POST
+        val USERS = Users_.USERS
     }
 
     fun create(post: Post): Long {
@@ -35,5 +41,34 @@ class PostRepository(
     fun findById(id: Long): Post {
         return dslContext.selectFrom(POST)
             .fetchOneInto(Post::class.java) ?: throw NotFoundException("could not find post")
+    }
+
+    fun findAll(pageRequest: PageRequest, query: String): PageResponse<PostWithUserResponse> {
+        val totalElements = dslContext.select(DSL.count())
+            .from(POST)
+            .where(POST.TITLE.like("%${query}%"))
+            .fetchOneInto(Long::class.java) ?: 0L
+        val content = dslContext
+            .select(
+                *POST.fields(),
+                *USERS.fields()
+            ).from(POST)
+            .join(USERS).on(POST.USER_ID.eq(USERS.ID))
+            .where(POST.TITLE.like("%${query}%"))
+            .limit(pageRequest.size)
+            .offset(pageRequest.offset())
+            .fetch({ record ->
+                PostWithUser(
+                    post = record.into(POST).into(Post::class.java),
+                    user = record.into(USERS).into(Users::class.java)
+                ).toResponse()
+            })
+
+        return PageResponse.of(
+            content = content,
+            page = pageRequest.page,
+            size = pageRequest.size,
+            totalElements = totalElements
+        )
     }
 }
