@@ -9,9 +9,9 @@ import com.example.kotlin.jooq.dto.page.PageResponse
 import com.example.kotlin.jooq.dto.post.PostWithUser
 import com.example.kotlin.jooq.dto.post.PostWithUserResponse
 import com.example.kotlin.jooq.exceptions.NotFoundException
-import org.jooq.Condition
+import com.example.kotlin.jooq.utils.jooq.conditions.JooqConditions.likeIfNotBlank
+import com.example.kotlin.jooq.utils.jooq.extensions.likeIfNotBlank
 import org.jooq.DSLContext
-import org.jooq.Field
 import org.jooq.impl.DSL
 import org.springframework.stereotype.Repository
 
@@ -83,7 +83,7 @@ class PostRepository(
     fun findAll(pageRequest: PageRequest, query: String): PageResponse<PostWithUserResponse> {
         val totalElements = dslContext.select(DSL.count())
             .from(POST)
-            .where(likeTitle(POST.TITLE, query))
+            .where(POST.TITLE.likeIfNotBlank(query).or(POST.CONTENT.likeIfNotBlank(query)))
             .fetchOneInto(Long::class.java) ?: 0L
         val content = dslContext
             .select(
@@ -91,7 +91,7 @@ class PostRepository(
                 *USERS.fields()
             ).from(POST)
             .join(USERS).on(POST.USER_ID.eq(USERS.ID))
-            .where(likeTitle(POST.TITLE, query))
+            .where(POST.TITLE.likeIfNotBlank(query).or(POST.CONTENT.likeIfNotBlank(query)))
             .orderBy(POST.ID.desc())
             .limit(pageRequest.size)
             .offset(pageRequest.offset())
@@ -110,7 +110,35 @@ class PostRepository(
         )
     }
 
-    private fun likeTitle(field: Field<String?>, value: String?): Condition {
-        return value?.takeIf { it.isNotBlank() }?.let { field.like("%$it%") } ?: DSL.noCondition()
+    fun findAll2(pageRequest: PageRequest, query: String): PageResponse<PostWithUserResponse> {
+        val totalElements = dslContext.select(DSL.count())
+            .from(POST)
+            .where(POST.TITLE.likeIfNotBlank(query))
+            .fetchOneInto(Long::class.java) ?: 0L
+
+        val content = dslContext
+            .select(
+                *POST.fields(),
+                *POST.users().fields()
+            ).from(POST)
+            .join(POST.users())
+            .where(POST.TITLE.likeIfNotBlank(query))
+            .orderBy(POST.ID.desc())
+            .limit(pageRequest.size)
+            .offset(pageRequest.offset())
+            .fetch({ record ->
+                PostWithUser(
+                    post = record.into(POST).into(Post::class.java),
+                    user = record.into(USERS).into(Users::class.java)
+                ).toResponse()
+            })
+
+        return PageResponse.of(
+            content = content,
+            page = pageRequest.page,
+            size = pageRequest.size,
+            totalElements = totalElements
+        )
     }
+
 }

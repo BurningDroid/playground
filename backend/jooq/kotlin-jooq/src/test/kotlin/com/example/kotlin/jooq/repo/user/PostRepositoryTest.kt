@@ -29,7 +29,7 @@ class PostRepositoryTest {
         val post = createPost()
         postRepo.create(post)
 
-        val query = "제목1"
+        val query = "c"
 
         val response = postRepo.findAll(PageRequest(), query)
 
