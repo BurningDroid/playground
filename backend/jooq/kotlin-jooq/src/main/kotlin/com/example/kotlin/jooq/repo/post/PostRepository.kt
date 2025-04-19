@@ -9,7 +9,9 @@ import com.example.kotlin.jooq.dto.page.PageResponse
 import com.example.kotlin.jooq.dto.post.PostWithUser
 import com.example.kotlin.jooq.dto.post.PostWithUserResponse
 import com.example.kotlin.jooq.exceptions.NotFoundException
+import org.jooq.Condition
 import org.jooq.DSLContext
+import org.jooq.Field
 import org.jooq.impl.DSL
 import org.springframework.stereotype.Repository
 
@@ -81,7 +83,7 @@ class PostRepository(
     fun findAll(pageRequest: PageRequest, query: String): PageResponse<PostWithUserResponse> {
         val totalElements = dslContext.select(DSL.count())
             .from(POST)
-            .where(POST.TITLE.like("%${query}%"))
+            .where(likeTitle(POST.TITLE, query))
             .fetchOneInto(Long::class.java) ?: 0L
         val content = dslContext
             .select(
@@ -89,7 +91,8 @@ class PostRepository(
                 *USERS.fields()
             ).from(POST)
             .join(USERS).on(POST.USER_ID.eq(USERS.ID))
-            .where(POST.TITLE.like("%${query}%"))
+            .where(likeTitle(POST.TITLE, query))
+            .orderBy(POST.ID.desc())
             .limit(pageRequest.size)
             .offset(pageRequest.offset())
             .fetch({ record ->
@@ -105,5 +108,9 @@ class PostRepository(
             size = pageRequest.size,
             totalElements = totalElements
         )
+    }
+
+    private fun likeTitle(field: Field<String?>, value: String?): Condition {
+        return value?.takeIf { it.isNotBlank() }?.let { field.like("%$it%") } ?: DSL.noCondition()
     }
 }

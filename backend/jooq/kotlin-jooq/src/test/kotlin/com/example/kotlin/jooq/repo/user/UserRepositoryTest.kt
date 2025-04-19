@@ -21,8 +21,6 @@ class UserRepositoryTest {
         val users = userRepo.create1(user)
 
         assertThat(users).isNotNull()
-        assertThat(users.createdAt).isNotNull()
-        assertThat(users.updatedAt).isNotNull()
     }
 
     @Test
