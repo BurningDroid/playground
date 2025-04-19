@@ -65,4 +65,12 @@ class PostController(
     ): ResponseEntity<ApiResponse<PageResponse<PostWithUserResponse>>> {
         return ResponseEntity.ok(ApiResponse.success(postService.findAll2(pageRequest, query)))
     }
+
+    @GetMapping("/v3/list")
+    fun findAll3(
+        @ModelAttribute pageRequest: PageRequest,
+        @RequestParam("q", defaultValue = "") query: String,
+    ): ResponseEntity<ApiResponse<PageResponse<PostWithUserResponse>>> {
+        return ResponseEntity.ok(ApiResponse.success(postService.findAll3(pageRequest, query)))
+    }
 }

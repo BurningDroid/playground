@@ -13,6 +13,7 @@ import com.example.kotlin.jooq.utils.jooq.conditions.JooqConditions.likeIfNotBla
 import com.example.kotlin.jooq.utils.jooq.extensions.likeIfNotBlank
 import org.jooq.DSLContext
 import org.jooq.impl.DSL
+import org.jooq.impl.DSL.select
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -126,6 +127,42 @@ class PostRepository(
             .orderBy(POST.ID.desc())
             .limit(pageRequest.size)
             .offset(pageRequest.offset())
+            .fetch({ record ->
+                PostWithUser(
+                    post = record.into(POST).into(Post::class.java),
+                    user = record.into(USERS).into(Users::class.java)
+                ).toResponse()
+            })
+
+        return PageResponse.of(
+            content = content,
+            page = pageRequest.page,
+            size = pageRequest.size,
+            totalElements = totalElements
+        )
+    }
+
+    fun findAll3(pageRequest: PageRequest, query: String): PageResponse<PostWithUserResponse> {
+        val totalElements = dslContext.select(DSL.count())
+            .from(POST)
+            .where(POST.TITLE.likeIfNotBlank(query))
+            .fetchOneInto(Long::class.java) ?: 0L
+
+        val subquery = DSL.select(POST.ID)
+            .from(POST)
+            .orderBy(POST.ID.desc())
+            .limit(pageRequest.size)
+            .offset(pageRequest.offset())
+            .asTable("subquery")
+
+        val content = dslContext
+            .select(
+                *POST.fields(),
+                *POST.users().fields()
+            ).from(subquery)
+            .leftJoin(POST).on(POST.ID.eq(subquery.field(POST.ID)))
+            .join(POST.users())
+            .where(POST.TITLE.likeIfNotBlank(query))
             .fetch({ record ->
                 PostWithUser(
                     post = record.into(POST).into(Post::class.java),

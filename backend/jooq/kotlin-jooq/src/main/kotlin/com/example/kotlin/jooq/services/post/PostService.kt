@@ -35,4 +35,8 @@ class PostService(
     fun findAll2(pageRequest: PageRequest, query: String): PageResponse<PostWithUserResponse> {
         return postRepo.findAll2(pageRequest, query)
     }
+
+    fun findAll3(pageRequest: PageRequest, query: String): PageResponse<PostWithUserResponse> {
+        return postRepo.findAll3(pageRequest, query)
+    }
 }
