@@ -178,4 +178,20 @@ class PostRepository(
         )
     }
 
+    fun update(post: Post): Long {
+        val updatedRows = dslContext.update(POST)
+            .set(POST.TITLE, post.title)
+            .set(POST.CONTENT, post.content)
+            .where(
+                POST.ID.eq(post.id),
+                POST.USER_ID.eq(post.userId)
+            ).execute()
+
+        return if (updatedRows > 0) {
+            return post.id!!
+        } else {
+            throw NotFoundException("Post with id ${post.id} not found")
+        }
+    }
+
 }

@@ -3,10 +3,7 @@ package com.example.kotlin.jooq.services.post
 import com.example.generated.tables.pojos.Post
 import com.example.kotlin.jooq.dto.page.PageRequest
 import com.example.kotlin.jooq.dto.page.PageResponse
-import com.example.kotlin.jooq.dto.post.PostCreateServiceDto
-import com.example.kotlin.jooq.dto.post.PostResponse
-import com.example.kotlin.jooq.dto.post.PostWithUserResponse
-import com.example.kotlin.jooq.dto.post.toResponse
+import com.example.kotlin.jooq.dto.post.*
 import com.example.kotlin.jooq.repo.post.PostRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -38,5 +35,11 @@ class PostService(
 
     fun findAll3(pageRequest: PageRequest, query: String): PageResponse<PostWithUserResponse> {
         return postRepo.findAll3(pageRequest, query)
+    }
+
+    @Transactional
+    fun update(serviceDto: PostUpdateServiceDto): Long {
+        val post = serviceDto.toEntity()
+        return postRepo.update(post)
     }
 }

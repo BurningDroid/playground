@@ -1,5 +1,6 @@
 package com.example.kotlin.jooq.dto.post
 
+import com.example.kotlin.jooq.exceptions.NotFoundException
 import jakarta.validation.constraints.NotBlank
 
 data class PostRequest(
@@ -17,5 +18,16 @@ data class PostRequest(
             content = content,
             userId = userId
         )
+    }
+
+    fun toUpdateServiceDto(): PostUpdateServiceDto {
+        return id?.let { postId ->
+            PostUpdateServiceDto(
+                id = postId,
+                title = title,
+                content = content,
+                userId = userId
+            )
+        } ?: throw NotFoundException("해당 게시글 id가 없어 수정할 수 없습니다.")
     }
 }
