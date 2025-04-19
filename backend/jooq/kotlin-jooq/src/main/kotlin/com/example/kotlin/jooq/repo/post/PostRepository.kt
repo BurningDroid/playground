@@ -40,7 +40,42 @@ class PostRepository(
 
     fun findById(id: Long): Post {
         return dslContext.selectFrom(POST)
+            .where(POST.ID.eq(id))
             .fetchOneInto(Post::class.java) ?: throw NotFoundException("could not find post")
+    }
+
+    fun findById2(id: Long): PostWithUserResponse {
+        return dslContext
+            .select(
+                *POST.fields(),
+                *USERS.fields(),
+            )
+            .from(POST)
+            .join(USERS).on(POST.USER_ID.eq(USERS.ID))
+            .where(POST.ID.eq(id))
+            .fetchOne { record ->
+                PostWithUser(
+                    post = record.into(POST).into(Post::class.java),
+                    user = record.into(USERS).into(Users::class.java)
+                ).toResponse()
+            } ?: throw NotFoundException("could not find post")
+    }
+
+    fun findById3(id: Long): PostWithUserResponse {
+        return dslContext
+            .select(
+                *POST.fields(),
+                *POST.users().fields()
+            )
+            .from(POST)
+            .join(POST.users())
+            .where(POST.ID.eq(id))
+            .fetchOne { record ->
+                PostWithUser(
+                    post = record.into(POST).into(Post::class.java),
+                    user = record.into(USERS).into(Users::class.java)
+                ).toResponse()
+            } ?: throw NotFoundException("could not find post")
     }
 
     fun findAll(pageRequest: PageRequest, query: String): PageResponse<PostWithUserResponse> {

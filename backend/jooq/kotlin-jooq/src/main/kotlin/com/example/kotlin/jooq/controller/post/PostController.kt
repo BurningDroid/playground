@@ -38,6 +38,18 @@ class PostController(
             .ok(ApiResponse.success(postService.findById(id)))
     }
 
+    @GetMapping("/v2/{id}")
+    fun findById2(@PathVariable id: Long): ResponseEntity<ApiResponse<PostWithUserResponse>> {
+        return ResponseEntity
+            .ok(ApiResponse.success(postService.findById2(id)))
+    }
+
+    @GetMapping("/v3/{id}")
+    fun findById3(@PathVariable id: Long): ResponseEntity<ApiResponse<PostWithUserResponse>> {
+        return ResponseEntity
+            .ok(ApiResponse.success(postService.findById3(id)))
+    }
+
     @GetMapping("/list")
     fun findAll(
         @ModelAttribute pageRequest: PageRequest,

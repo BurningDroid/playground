@@ -22,10 +22,11 @@ class PostService(
         return postRepo.create(post)
     }
 
-    fun findById(id: Long): PostResponse {
-        val post: Post = postRepo.findById(id)
-        return post.toResponse()
-    }
+    fun findById(id: Long): PostResponse = postRepo.findById(id).toResponse()
+
+    fun findById2(id: Long): PostWithUserResponse = postRepo.findById2(id)
+
+    fun findById3(id: Long): PostWithUserResponse = postRepo.findById3(id)
 
     fun findAll(pageRequest: PageRequest, query: String): PageResponse<PostWithUserResponse> {
         return postRepo.findAll(pageRequest, query)
