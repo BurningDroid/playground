@@ -42,4 +42,9 @@ class PostService(
         val post = serviceDto.toEntity()
         return postRepo.update(post)
     }
+
+    @Transactional
+    fun delete(id: Long): Int {
+        return postRepo.delete(id)
+    }
 }

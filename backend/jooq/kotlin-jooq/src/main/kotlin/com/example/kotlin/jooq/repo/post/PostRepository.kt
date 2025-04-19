@@ -194,4 +194,8 @@ class PostRepository(
         }
     }
 
+    fun delete(id: Long): Int {
+        return dslContext.delete(POST).where(POST.ID.eq(id)).execute()
+    }
+
 }

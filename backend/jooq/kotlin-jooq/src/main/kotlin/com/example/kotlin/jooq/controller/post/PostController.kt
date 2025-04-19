@@ -9,6 +9,7 @@ import com.example.kotlin.jooq.dto.post.PostWithUserResponse
 import com.example.kotlin.jooq.services.post.PostService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PathVariable
@@ -79,6 +80,11 @@ class PostController(
     fun update(@RequestBody request: PostRequest): ResponseEntity<ApiResponse<Long>> {
         val serviceDto = request.toUpdateServiceDto()
         return ResponseEntity.ok(ApiResponse.success(postService.update(serviceDto)))
+    }
+
+    @DeleteMapping("/{id}")
+    fun delete(@PathVariable("id") id: Long): ResponseEntity<ApiResponse<Int>> {
+        return ResponseEntity.ok(ApiResponse.success(postService.delete(id)))
     }
 
 }
