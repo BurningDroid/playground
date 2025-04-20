@@ -76,4 +76,22 @@ class RecordTest {
         log.info(username2)
         log.info(username3)
     }
+
+    @DisplayName("Record 업데이트 후 최신 정보 가져오기")
+    @Test
+    fun refreshTest() {
+        val record: UsersRecord = dslContext.selectFrom(USERS)
+            .where(USERS.ID.eq(1))
+            .fetchOne() ?: throw RuntimeException("user not found")
+
+        dslContext.update(USERS)
+            .set(USERS.USERNAME, "change_username")
+            .where(USERS.ID.eq(1))
+            .execute()
+
+        record.refresh()
+
+        log.info("==================== update ====================")
+        log.info(record.username)
+    }
 }
