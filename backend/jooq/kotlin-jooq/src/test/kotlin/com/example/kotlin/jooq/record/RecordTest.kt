@@ -111,4 +111,21 @@ class RecordTest {
 
         dslContext.newResult(USERS)[1] = newRecord
     }
+
+    @DisplayName("조회한 Record 필드 값 변경 후 store test")
+    @Test
+    fun storeTest2() {
+        val oldRecord = dslContext.selectFrom(USERS)
+            .where(USERS.ID.eq(1))
+            .fetchOne() ?: throw RuntimeException("user not found")
+
+        log.info("old record: $oldRecord")
+
+        oldRecord.username = "record_test1"
+
+        oldRecord.store()
+        oldRecord.refresh()
+
+        log.info("new record: $oldRecord")
+    }
 }
