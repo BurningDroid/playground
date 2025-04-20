@@ -1,10 +1,9 @@
 package com.example.kotlin.jooq.record
 
 import com.example.generated.tables.Users_
+import com.example.generated.tables.pojos.Users
 import com.example.generated.tables.records.UsersRecord
-import org.jooq.DSLContext
-import org.jooq.Record
-import org.jooq.Result
+import org.jooq.*
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
@@ -127,5 +126,40 @@ class RecordTest {
         oldRecord.refresh()
 
         log.info("new record: $oldRecord")
+    }
+
+    @DisplayName("Record into test")
+    @Test
+    fun recordIntoTest() {
+        // 1. Record -> POJO
+        val record: UsersRecord = dslContext.selectFrom(USERS)
+            .where(USERS.ID.eq(1))
+            .fetchOne() ?: throw RuntimeException("user not found")
+
+        val users: Users = record.into(Users::class.java)
+        log.info("users pojo: $users")
+
+
+        // 2. Result<Record> -> List<Users>
+        val records: Result<UsersRecord> = dslContext.selectFrom(USERS).fetch()
+
+        val usersList: List<Users> = records.into(Users::class.java)
+        log.info("usersList pojo: $usersList")
+
+
+        // 3. 특정 필드만 Record 변환
+        val partialRecord: Record3<Long?, String?, String?> = dslContext
+            .select(USERS.ID, USERS.EMAIL, USERS.USERNAME)
+            .from(USERS)
+            .where(USERS.ID.eq(1))
+            .fetchOne() ?: throw RuntimeException("user not found")
+
+        val partialUsers= partialRecord.into(Users::class.java)
+        log.info("partialUsers: $partialUsers")
+
+
+        // 4. Map
+        val map: Map<String, Any> = record.intoMap()
+        log.info("map: $map")
     }
 }
