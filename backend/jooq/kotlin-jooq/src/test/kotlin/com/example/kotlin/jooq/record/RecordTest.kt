@@ -94,4 +94,21 @@ class RecordTest {
         log.info("==================== update ====================")
         log.info(record.username)
     }
+
+    @DisplayName("Record store test")
+    @Test
+    fun storeTest() {
+        val newRecord = dslContext.newRecord(USERS)
+        log.info("before: $newRecord")
+
+        newRecord.email = "record_test@test.com"
+        newRecord.username = "record_test1"
+        newRecord.password = "record1234"
+        newRecord.store()
+        newRecord.refresh()
+
+        log.info("after: $newRecord")
+
+        dslContext.newResult(USERS)[1] = newRecord
+    }
 }
