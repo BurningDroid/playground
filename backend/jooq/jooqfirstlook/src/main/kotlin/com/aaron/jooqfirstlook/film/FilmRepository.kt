@@ -5,7 +5,6 @@ import org.jooq.generated.tables.JActor
 import org.jooq.generated.tables.JFilm
 import org.jooq.generated.tables.JFilmActor
 import org.jooq.generated.tables.pojos.Film
-import org.jooq.impl.DSL
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
 
@@ -39,9 +38,9 @@ class FilmRepository{
         val ACTOR = JActor.ACTOR
 
         return dslContext.select(
-            DSL.row(FILM.fields()),
-            DSL.row(FILM_ACTOR.fields()),
-            DSL.row(ACTOR.fields()),
+            FILM,
+            FILM_ACTOR,
+            ACTOR,
         ).from(FILM)
             .join(FILM_ACTOR).on(FILM.FILM_ID.eq(FILM_ACTOR.FILM_ID))
             .join(ACTOR).on(ACTOR.ACTOR_ID.eq(FILM_ACTOR.ACTOR_ID))
