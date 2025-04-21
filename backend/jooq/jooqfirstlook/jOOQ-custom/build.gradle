@@ -1,0 +1,19 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+}
+
+group = 'com.aaron'
+version = '0.0.1-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation("org.jooq:jooq-codegen:${jooqVersion}")
+    runtimeOnly("com.mysql:mysql-connector-j:8.2.0")
+}
+
+kotlin {
+    jvmToolchain(17)
+}
