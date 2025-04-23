@@ -1,9 +1,7 @@
 package com.aaron.jooqfirstlook
 
 import com.aaron.jooqfirstlook.film.FilmPriceSummary
-import com.aaron.jooqfirstlook.film.FilmRepository
 import com.aaron.jooqfirstlook.film.FilmRepositoryHasA
-import com.aaron.jooqfirstlook.film.FilmService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
