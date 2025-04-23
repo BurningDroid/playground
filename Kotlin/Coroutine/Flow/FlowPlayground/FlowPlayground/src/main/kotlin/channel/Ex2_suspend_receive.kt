@@ -8,7 +8,7 @@ import org.example.log
 
 fun main() = runBlocking<Unit> {
 
-    val channel = Channel<Int>()
+    val channel: Channel<Int> = Channel<Int>()
     log("channel is created")
 
     launch { // 소비자 코루틴

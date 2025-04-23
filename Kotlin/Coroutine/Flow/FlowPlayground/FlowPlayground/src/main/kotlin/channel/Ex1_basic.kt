@@ -12,6 +12,7 @@ fun main() = runBlocking<Unit> {
 
     launch { // 생산자 코루틴
         repeat(3) {
+            delay(1_000)
             log("[sender] send: $it")
             channel.send(it)
         }
@@ -20,7 +21,6 @@ fun main() = runBlocking<Unit> {
     launch { // 소비자 코루틴
         for (value in channel) {
             log("[receiver] received: $value\n")
-            delay(1_000)
         }
     }
 }
