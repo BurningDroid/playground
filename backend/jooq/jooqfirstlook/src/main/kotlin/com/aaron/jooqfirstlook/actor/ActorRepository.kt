@@ -11,13 +11,14 @@ import org.jooq.generated.tables.JFilmActor
 import org.jooq.generated.tables.daos.ActorDao
 import org.jooq.generated.tables.pojos.Actor
 import org.jooq.generated.tables.pojos.Film
+import org.jooq.generated.tables.records.ActorRecord
 import org.jooq.impl.DSL
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
 
 @Repository
 class ActorRepository(
-    configuration: Configuration
+    configuration: Configuration,
 ) {
     @Autowired
     lateinit var dslContext: DSLContext
@@ -80,6 +81,50 @@ class ActorRepository(
         }
 
         return field.like("%$value%")
+    }
+
+    fun saveByDao(actor: Actor): Actor {
+        actorDao.insert(actor)
+        return actor
+    }
+
+    fun saveByRecord(actor: Actor): ActorRecord {
+        val actorRecord = dslContext.newRecord(ACTOR, actor)
+        actorRecord.insert()
+        return actorRecord
+    }
+
+    fun saveWithReturningPkOnly(actor: Actor): Long {
+        return dslContext.insertInto(
+            ACTOR,
+            ACTOR.FIRST_NAME,
+            ACTOR.LAST_NAME
+        ).values(actor.firstName, actor.lastName)
+            .returningResult(ACTOR.ACTOR_ID)
+            .fetchOneInto(Long::class.java) ?: throw Exception("")
+    }
+
+    fun saveWithReturning(actor: Actor): Actor {
+        return dslContext.insertInto(
+            ACTOR,
+            ACTOR.FIRST_NAME,
+            ACTOR.LAST_NAME
+        ).values(actor.firstName, actor.lastName)
+            .returning(*ACTOR.fields())
+            .fetchOneInto(Actor::class.java) ?: throw Exception("")
+    }
+
+    fun bulkInsertWithRows(actors: List<Actor>) {
+        val rows = actors.stream()
+            .map { actor ->
+                DSL.row(actor.firstName, actor.lastName)
+            }
+            .toList()
+        dslContext.insertInto(
+            ACTOR,
+            ACTOR.FIRST_NAME,
+            ACTOR.LAST_NAME
+        ).valuesOfRows(rows).execute()
     }
 
 
