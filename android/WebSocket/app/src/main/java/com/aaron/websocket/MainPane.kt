@@ -86,11 +86,11 @@ fun MainPane(vm: MainViewModel) {
                         )
                     }
 
-                    items(vm.supportProgramList) { programName ->
+                    items(vm.supportProgramList) { app ->
                         RunButton(
-                            name = programName,
+                            name = app.name,
                             onClick = {
-                                vm.onClickProgram(programName)
+                                vm.onClickProgram(app)
                             }
                         )
                     }

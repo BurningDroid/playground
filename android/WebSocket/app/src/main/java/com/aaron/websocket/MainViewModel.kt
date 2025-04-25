@@ -8,24 +8,28 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
+import com.aaron.websocket.client.client
+import com.aaron.websocket.model.WsMessage
 import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
-import io.ktor.client.plugins.websocket.WebSockets
+import io.ktor.client.plugins.websocket.sendSerialized
 import io.ktor.client.plugins.websocket.webSocket
+import io.ktor.util.reflect.typeInfo
 import io.ktor.websocket.Frame
 import io.ktor.websocket.close
 import io.ktor.websocket.readText
-import io.ktor.websocket.send
+import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 
-class MainViewModel: ViewModel() {
+class MainViewModel : ViewModel() {
 
     var connected: Boolean by mutableStateOf(false)
         private set
 
     val chatList: SnapshotStateList<String> = mutableStateListOf()
-    val supportProgramList: SnapshotStateList<String> = mutableStateListOf()
+    val supportProgramList: SnapshotStateList<WsMessage.App> = mutableStateListOf()
     val shortcuts = listOf(
         "⌘C",
         "⌘V",
@@ -35,9 +39,6 @@ class MainViewModel: ViewModel() {
         "⌘Q"
     )
 
-    private val client = HttpClient(CIO) {
-        install(WebSockets)
-    }
     private var webSocketSession: DefaultClientWebSocketSession? = null
 
     fun connect(url: String = "ws://192.168.207.33:8080/launcher") {
@@ -49,9 +50,12 @@ class MainViewModel: ViewModel() {
 
                     observeClose()
 
-                    for (frame in incoming) {
-                        onReceiveMessage(frame)
-                    }
+                    incoming.receiveAsFlow()
+                        .onEach { Log.w(TAG, "[spoon][test] connect.receive: ${(it as? Frame.Text)?.readText()}") }
+                        .mapNotNull { it as? Frame.Text }
+                        .collect { frame ->
+                            onReceiveMessage(frame)
+                        }
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "[ws] connect - failed: ${e.localizedMessage}", e)
@@ -78,20 +82,20 @@ class MainViewModel: ViewModel() {
         webSocketSession = null
     }
 
-    private fun onReceiveMessage(frame: Frame) {
-        when (frame) {
-            is Frame.Text -> {
-                val text = frame.readText()
-                if (text.contains(",")) {
-                    supportProgramList.clear()
-                    supportProgramList.addAll(text.split(",").map(String::trim))
-                } else {
-                    chatList.add(frame.readText())
-                }
+    private fun onReceiveMessage(frame: Frame.Text) {
+        val wsMessage = Json.decodeFromString<WsMessage>(frame.readText())
+        when (wsMessage) {
+            is WsMessage.Apps -> {
+                supportProgramList.clear()
+                supportProgramList.addAll(wsMessage.list)
             }
 
-            else -> {}
+            is WsMessage.App -> {}
+
+            is WsMessage.ShortCut -> {}
         }
+
+        chatList.add(wsMessage.toString())
     }
 
     fun disconnect() {
@@ -102,15 +106,15 @@ class MainViewModel: ViewModel() {
         }
     }
 
-    fun onClickProgram(programName: String) {
+    fun onClickProgram(app: WsMessage.App) {
         viewModelScope.launch {
-            webSocketSession?.send(programName)
+            webSocketSession?.sendSerialized(app, typeInfo<WsMessage>())
         }
     }
 
-    fun onClickShortcut(shortcut: String) {
+    fun onClickShortcut(shortCut: String) {
         viewModelScope.launch {
-            webSocketSession?.send(shortcut)
+            webSocketSession?.sendSerialized(WsMessage.ShortCut(shortCut), typeInfo<WsMessage>())
         }
     }
 
