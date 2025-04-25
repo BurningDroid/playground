@@ -10,7 +10,10 @@ class JooqConfig {
     @Bean
     fun jooqDefaultConfigurationCustomizer(): DefaultConfigurationCustomizer {
         return DefaultConfigurationCustomizer { customizer ->
-            customizer.settings().withRenderSchema(false)
+            customizer.settings()
+                .withRenderSchema(false)
+                .withExecuteDeleteWithoutWhere(ExecuteWithoutWhere.THROW)
+                .withExecuteUpdateWithoutWhere(ExecuteWithoutWhere.THROW)
         }
     }
 }
