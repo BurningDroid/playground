@@ -127,5 +127,55 @@ class ActorRepository(
         ).valuesOfRows(rows).execute()
     }
 
+    fun update(actor: Actor) {
+        actorDao.update(actor)
+    }
+
+    fun findByActorId(actorId: Long?): Actor? {
+        return actorDao.findById(actorId)
+    }
+
+    fun updateWithDto(actorId: Long, request: ActorUpdateRequest): Int {
+        val firstName: Field<String?> =
+            if (request.firstName.isNotBlank()) DSL.`val`(request.firstName) else DSL.noField(ACTOR.FIRST_NAME)
+        val lastName: Field<String?> =
+            if (request.lastName.isNotBlank()) DSL.`val`(request.lastName) else DSL.noField(ACTOR.LAST_NAME)
+        return dslContext.update(ACTOR)
+            .set(ACTOR.FIRST_NAME, firstName)
+            .set(ACTOR.LAST_NAME, lastName)
+            .where(ACTOR.ACTOR_ID.eq(actorId))
+            .execute()
+    }
+
+    fun updateWithRecord(actorId: Long, request: ActorUpdateRequest): Int {
+        val record: ActorRecord? = dslContext.fetchOne(ACTOR, ACTOR.ACTOR_ID.eq(actorId))
+
+        if (request.firstName.isNotBlank()) {
+            record?.firstName = request.firstName
+        }
+
+        if (request.lastName.isNotBlank()) {
+            record?.lastName = request.lastName
+        }
+
+        return dslContext.update(ACTOR)
+            .set(record)
+            .where(ACTOR.ACTOR_ID.eq(actorId))
+            .execute()
+    }
+
+    fun delete(actorId: Long?): Int {
+        return dslContext.deleteFrom(ACTOR)
+            .where(ACTOR.ACTOR_ID.eq(actorId))
+            .execute()
+
+//        return actorDao.deleteById(actorId)
+    }
+
+    fun deleteWithRecord(actorId: Long?): Int? {
+        val record = dslContext.fetchOne(ACTOR, ACTOR.ACTOR_ID.eq(actorId))
+        return record?.delete()
+    }
+
 
 }
