@@ -177,5 +177,9 @@ class ActorRepository(
         return record?.delete()
     }
 
+    fun findRecordByActorId(actorId: Long): ActorRecord? {
+        return dslContext.fetchOne(ACTOR, ACTOR.ACTOR_ID.eq(actorId))
+    }
+
 
 }
